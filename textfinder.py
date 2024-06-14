@@ -10,7 +10,7 @@ from colorama import Fore, init
 
 init(autoreset=True)
 
-def search_text_in_directory(directory: str, text_list: list, omit_list: list, num_threads: int, use_regex: bool, case_insensitive: bool) -> list:
+def search_text_in_directory(directory: str, text_list: list, omit_list: list, include_ext: list, exclude_ext: list, num_threads: int, use_regex: bool, case_insensitive: bool) -> list:
     results = []
     file_paths = []
 
@@ -18,6 +18,10 @@ def search_text_in_directory(directory: str, text_list: list, omit_list: list, n
         if not any(omit in root for omit in omit_list):
             for file in files:
                 file_path = os.path.join(root, file)
+                if include_ext and not any(file.endswith(ext) for ext in include_ext):
+                    continue
+                if exclude_ext and any(file.endswith(ext) for ext in exclude_ext):
+                    continue
                 file_paths.append(file_path)
 
     file_processor = FileProcessor(use_regex, case_insensitive)
@@ -63,15 +67,19 @@ def main():
     parser.add_argument('-c', '--case-insensitive', action='store_true', help='Perform case insensitive search.')
     parser.add_argument('-f', '--output-format', type=str, choices=['json', 'csv'], help='Format to save the results (json or csv).')
     parser.add_argument('-O', '--output-file', type=str, help='File to save the results.')
+    parser.add_argument('--include-ext', action='append', help='File extensions to include, can be specified multiple times.')
+    parser.add_argument('--exclude-ext', action='append', help='File extensions to exclude, can be specified multiple times.')
 
     args = parser.parse_args()
 
     text_list = args.text if args.text else []
     omit_list = args.omit if args.omit else []
+    include_ext = args.include_ext if args.include_ext else []
+    exclude_ext = args.exclude_ext if args.exclude_ext else []
     num_threads = threads_to_run(args.num_threads)
 
     start = time.time()
-    results = search_text_in_directory(args.path, text_list, omit_list, num_threads, args.regex, args.case_insensitive)
+    results = search_text_in_directory(args.path, text_list, omit_list, include_ext, exclude_ext, num_threads, args.regex, args.case_insensitive)
     end = time.time()
 
     if results:

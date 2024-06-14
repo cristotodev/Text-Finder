@@ -6,6 +6,7 @@ TextFinder es una herramienta de línea de comandos en Python que busca texto en
 
 - Busca múltiples textos en archivos de un directorio.
 - Permite omitir directorios específicos.
+- Permite incluir o excluir archivos por su extensión.
 - Resultados presentados en una tabla con colores para facilitar la lectura.
 - Soporte para expresiones regulares en las búsquedas.
 - Opción para realizar búsquedas sin diferenciar entre mayúsculas y minúsculas.
@@ -46,6 +47,20 @@ Para omitir ciertos directorios durante la búsqueda, utiliza la opción -o y es
 python textfinder.py -p /ruta/del/directorio -t "texto1" -t "texto2" -o dir1 -o dir2
 ```
 
+### Inclusión o exclusión de archivos por extensión
+
+Para incluir solo archivos con ciertas extensiones, utiliza la opción --include-ext y especifícala varias veces.
+
+```sh
+textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" --include-ext .txt --include-ext .log
+```
+
+Para excluir archivos con ciertas extensiones, utiliza la opción --exclude-ext y especifícala varias veces.
+
+```sh
+textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" --exclude-ext .txt --exclude-ext .log
+```
+
 ### Búsqueda multihilo
 
 Para realizar la búsqueda utilizando múltiples hilos y así mejorar la velocidad de búsqueda, utiliza la opción -n para especificar el número de hilos.
@@ -82,7 +97,7 @@ textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -f csv -O resultados.
 ## Ejemplo completo
 
 ```sh
-textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -o dir1 -o dir2 -n 4 -r -c -f json -O resultados.json
+textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -o dir1 -o dir2 --include-ext .txt --exclude-ext .log -n 4 -r -c -f json -O resultados.json
 ```
 
 Este comando buscará "texto1" y "texto2" en todos los archivos del directorio especificado, omitiendo los directorios dir1 y dir2, utilizando 4 hilos, con expresiones regulares, sin diferenciar entre mayúsculas y minúsculas, y exportando los resultados en formato JSON al archivo resultados.json.
