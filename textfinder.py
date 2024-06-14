@@ -2,39 +2,15 @@ import os
 import argparse
 import time
 import multiprocessing
-import json
-import csv
-import re
+from exporter import Exporter
+from file_processor import FileProcessor
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tabulate import tabulate
 from colorama import Fore, init
 
 init(autoreset=True)
 
-def search_text_in_file(file_path: str, text_list: list, use_regex: bool, case_insensitive: bool):
-    try:
-        with open(file_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-            if case_insensitive:
-                content = content.lower()
-                text_list = [text.lower() for text in text_list]
-            found_words = []
-            for text in text_list:
-                if use_regex:
-                    if re.search(text, content):
-                        found_words.append(text)
-                else:
-                    if text in content:
-                        found_words.append(text)
-            if found_words:
-                return file_path, found_words
-    except UnicodeDecodeError:
-        pass
-    except Exception as e:
-        print(f"{Fore.RED}Error reading {file_path}: {e}")
-    return None
-
-def search_text_in_directory(directory: str, text_list: list, omit_list: list, num_threads: int, use_regex: bool, case_insensitive: bool):
+def search_text_in_directory(directory: str, text_list: list, omit_list: list, num_threads: int, use_regex: bool, case_insensitive: bool) -> list:
     results = []
     file_paths = []
 
@@ -44,13 +20,21 @@ def search_text_in_directory(directory: str, text_list: list, omit_list: list, n
                 file_path = os.path.join(root, file)
                 file_paths.append(file_path)
 
+    file_processor = FileProcessor(use_regex, case_insensitive)
+
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
-        futures = {executor.submit(search_text_in_file, file_path, text_list, use_regex, case_insensitive): file_path for file_path in file_paths}
-        for future in as_completed(futures):
-            result = future.result()
-            if result:
-                file_path, found_words = result
-                results.append([os.path.dirname(file_path), os.path.basename(file_path), ', '.join(found_words)])
+        try:
+            futures = {executor.submit(file_processor.process_file, file_path, text_list): file_path for file_path in file_paths}
+            for future in as_completed(futures):
+                result = future.result()
+                if result:
+                    file_path, found_words = result
+                    results.append([os.path.dirname(file_path), os.path.basename(file_path), ', '.join(found_words)])
+        except UnicodeDecodeError:
+            pass
+        except Exception as e:
+            print(f"{Fore.RED}Error reading {file_path}: {e}")
+
 
     return results
 
@@ -63,15 +47,11 @@ def threads_to_run(args_num_threads: int) -> int:
     
     return num_threads
 
-def save_results(results, output_format, output_file):
+def save_results(results, output_format: str, output_file: str) -> None:
     if output_format == 'json':
-        with open(output_file, 'w', encoding='utf-8') as f:
-            json.dump(results, f, ensure_ascii=False, indent=4)
+        Exporter.export_to_json(results, output_file)
     elif output_format == 'csv':
-        with open(output_file, 'w', newline='', encoding='utf-8') as f:
-            writer = csv.writer(f)
-            writer.writerow(["Folder path", "File", "Found words"])
-            writer.writerows(results)
+        Exporter.export_to_csv(results, output_file)
 
 def main():
     parser = argparse.ArgumentParser(description="To search for text in files within a directory.")
