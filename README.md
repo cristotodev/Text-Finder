@@ -16,8 +16,8 @@ TextFinder es una herramienta de línea de comandos en Python que busca texto en
 
 1. Clona este repositorio:
     ```sh
-    git clone https://github.com/tuusuario/textfinder.git
-    cd textfinder
+    git clone https://github.com/tuusuario/Text-Finder.git
+    cd Text-Finder
     ```
 
 2. Instala el proyecto y sus dependencias:
