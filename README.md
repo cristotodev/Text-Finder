@@ -43,10 +43,18 @@ Para omitir ciertos directorios durante la búsqueda, utiliza la opción -o y es
 python textfinder.py -p /ruta/del/directorio -t "texto1" -t "texto2" -o dir1 -o dir2
 ```
 
+### Búsqueda multihilo
+
+Para realizar la búsqueda utilizando múltiples hilos y así mejorar la velocidad de búsqueda, utiliza la opción -n para especificar el número de hilos.
+
+```sh
+textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -n 4
+```
+
 ## Ejemplo completo
 
 ```sh
-python textfinder.py -p /ruta/del/directorio -t "texto1" -t "texto2" -o dir1 -o dir2
+textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -o dir1 -o dir2 -n 4
 ```
 
 Este comando buscará "texto1" y "texto2" en todos los archivos del directorio especificado, omitiendo los directorios dir1 y dir2.
@@ -64,7 +72,7 @@ Los mensajes se muestran en colores para facilitar la lectura:
 - Verde: Número de coincidencias encontradas.
 - Amarillo: Indicador de que no se encontraron coincidencias.
 - Rojo: Mensajes de error durante la lectura de archivos.
-- Cian: Duración de la búsqueda.
+- Cian: Duración de la búsqueda y número de Threads lanzados
 
 ## Contribuciones
 
