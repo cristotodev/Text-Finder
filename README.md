@@ -7,6 +7,9 @@ TextFinder es una herramienta de línea de comandos en Python que busca texto en
 - Busca múltiples textos en archivos de un directorio.
 - Permite omitir directorios específicos.
 - Resultados presentados en una tabla con colores para facilitar la lectura.
+- Soporte para expresiones regulares en las búsquedas.
+- Opción para realizar búsquedas sin diferenciar entre mayúsculas y minúsculas.
+- Exportación de resultados en formatos JSON y CSV
 
 ## Requisitos
 
@@ -51,13 +54,38 @@ Para realizar la búsqueda utilizando múltiples hilos y así mejorar la velocid
 textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -n 4
 ```
 
+### Uso de expresiones regulares
+
+Para realizar búsquedas utilizando expresiones regulares, utiliza la opción -r.
+
+```sh
+textfinder -p /ruta/del/directorio -t "regex1" -t "regex2" -r
+```
+
+### Búsqueda sin diferenciar entre mayúsculas y minúsculas
+
+Para realizar búsquedas sin diferenciar entre mayúsculas y minúsculas, utiliza la opción -c.
+
+```sh
+textfinder -p /ruta/del/directorio -t "Texto1" -t "Texto2" -c
+```
+
+### Exportación de resultados
+
+Para exportar los resultados en formato JSON o CSV, utiliza las opciones -f para el formato y -O para especificar el archivo de salida.
+
+```sh
+textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -f json -O resultados.json
+textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -f csv -O resultados.csv
+```
+
 ## Ejemplo completo
 
 ```sh
-textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -o dir1 -o dir2 -n 4
+textfinder -p /ruta/del/directorio -t "texto1" -t "texto2" -o dir1 -o dir2 -n 4 -r -c -f json -O resultados.json
 ```
 
-Este comando buscará "texto1" y "texto2" en todos los archivos del directorio especificado, omitiendo los directorios dir1 y dir2.
+Este comando buscará "texto1" y "texto2" en todos los archivos del directorio especificado, omitiendo los directorios dir1 y dir2, utilizando 4 hilos, con expresiones regulares, sin diferenciar entre mayúsculas y minúsculas, y exportando los resultados en formato JSON al archivo resultados.json.
 
 ## Resultados
 
